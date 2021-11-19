@@ -62,7 +62,9 @@ const onClick = (e, index) => {
             if (flagsAround !== cell.value) return;
 
             if(cellHtml.classList.contains('visible') && cell.value !== '') {
-                cell.neighbors.forEach(({ isFlag, isMine, value, i }) => {
+                for (let j = 0; j < cell.neighbors.length; j++) {
+                    const { isFlag, isMine, value, i } = cell.neighbors[j];
+
                     neighborHtml = CELLSHTML[i];
                     
                     if (isFlag && !isMine) {
@@ -74,7 +76,7 @@ const onClick = (e, index) => {
                         }
                         neighborHtml.classList.add('visible');
                     }
-                })
+                }
             }
             break;
             
