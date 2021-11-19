@@ -5,19 +5,22 @@
 
 document.addEventListener('contextmenu', event => event.preventDefault());
 
+const timeHtml = document.querySelector('.time');
+const mineCounterHtml = document.querySelector('.mine-counter');
+const header = document.querySelector(".header");
 const grid = document.querySelector(".grid");
 const CELLSHTML = grid.children;
 
-const ROWS = 20;
-const COLS = 20;
-const MINES = 50;
+const ROWS = 16;
+const COLS = 30;
+const MINES = 99;
 const CELLS = new Array(ROWS * COLS).fill(0).map((cell, cellIndex) => ({
     i: cellIndex,
     value: '',
     neighbors: [],
     isMine: false,
     isFlag: false,
-})); 
+}));
 const COLORS = {
     '': '',
     1: 'green',
@@ -25,13 +28,15 @@ const COLORS = {
     3: '#d38800',
     4: 'purple',
     5: 'brown',
-    6: 'pink',
-    7: 'yellow',
-    8: 'red'
+    6: '#e12727',
+    7: 'red',
+    8: 'brown'
 };
 
-
+let timeInterval = null;
+let time = 0;
 let isVisited = [];
+let mineCounter = null;
 let isFirstClick = true;
 
 const onClick = (e, index) => {
@@ -96,6 +101,7 @@ const onClick = (e, index) => {
                 
                 cellHtml.classList.add('flag');
                 cellHtml.textContent = '';
+                mineCounterHtml.textContent = --mineCounter;
             }
             break;
     }
@@ -115,6 +121,8 @@ const checkWin = () => {
 }
 
 const gameOver = cellHtml => {
+    clearInterval(timeInterval);
+
     [...CELLSHTML].forEach(cell => {
         cell.classList.add('visible');
         cell.style.pointerEvents = 'none';
@@ -142,8 +150,9 @@ const openAround = (i) => {
 const determineNeighbors = () => {
     for(let i = 0; i < CELLS.length; i++) {
         const cell = CELLS[i];
-        const row = Math.floor(i / ROWS);
-        const col = i % ROWS;
+        // COLS: 30 ROWS: 16
+        const row = Math.floor(i / COLS);
+        const col = i % COLS;
 
         // left
         if (col > 0) cell.neighbors.push(CELLS[i - 1]);
@@ -164,6 +173,13 @@ const determineNeighbors = () => {
     }
 }
 
+const startTime = () => {
+    timeInterval = setInterval(() => {
+        time++;
+        timeHtml.textContent = time;
+    }, 1000);
+}
+
 // draw the board and determine neighbors for each cell
 const setupBoard = () => {
     for (let i = 0; i < CELLS.length; i++) {
@@ -172,29 +188,31 @@ const setupBoard = () => {
         cell.classList.add('cell');
         cell.addEventListener('mousedown', e => {
             if (isFirstClick) {
+                // first click
                 locateMines(i);
                 numerateCells();
+                startTime();
 
                 isFirstClick = false;
             }
             onClick(e, i);
         });
-        
+
         grid.appendChild(cell);
     }
 
     determineNeighbors();
 
-    grid.style.gridTemplateColumns = `repeat(${COLS}, 1fr)`;
-    grid.style.gridTemplateRows = `repeat(${ROWS}, 1fr)`;
+    grid.style.gridTemplateColumns = `repeat(${COLS}, 24px)`;
+    grid.style.gridTemplateRows = `repeat(${ROWS}, 24px)`;
+    header.style.width = `${COLS * 24}px`;
 }
 
 const locateMines = firstIndex => {
     const prob = MINES / CELLS.length;
-    let curMines = 0;
 
     for (let i = 0; i < CELLS.length; i++) {
-        if (curMines === MINES) break;
+        if (mineCounter === MINES) break;
 
         const cell = CELLS[i];
         const isMine = firstIndex === i 
@@ -204,9 +222,11 @@ const locateMines = firstIndex => {
         if (isMine) {
             cell.isMine = true;
             CELLSHTML[i].classList.add('mine');
-            curMines++;
+            mineCounter++;
         }
     }
+
+    mineCounterHtml.textContent = mineCounter;
 }
 
 const numerateCells = () => {

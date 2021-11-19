@@ -9,19 +9,35 @@ body {
     background-color: rgb(204, 204, 204);
 }
 
-h2 {
+.header {
     position: absolute;
     top: 1rem;
     left: 50%;
-    letter-spacing: 1px;
+    min-width: 400px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     transform: translateX(-50%);
+}
+
+.header h2 {
+    letter-spacing: 1px;
+}
+
+.header div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mine-counter, .time {
+    margin-left: .75rem;
 }
 
 .grid {
     position: absolute;
     display: grid;
-    width: 600px;
-    height: 600px;
     top: 6rem;
     left: 50%;
     border: 1px solid gray;
@@ -64,6 +80,10 @@ h2 {
     background: url('https://external-content.duckduckgo.com/iu/?u=http%3A%2F%2Fminesweeperonline.com%2Fflag.png&f=1&nofb=1') center center no-repeat;
     /* background: url('https://cdn.discordapp.com/attachments/795915486436261888/910822193015980052/pngegg.png') center center no-repeat; */
     background-size: 55%;
+}
+
+.cell.visible.flag {
+    background-color: #f1f1f1;
 }
 
 .cell:hover {
